@@ -13,7 +13,7 @@ namespace BlogSampleApi.Controllers
     public class AuthController : ControllerBase
     {
         protected readonly AppDbContext _context;
-        public IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public AuthController(AppDbContext context, IConfiguration configuration)
         {
@@ -25,7 +25,9 @@ namespace BlogSampleApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(AppUser appUser)
         {
-            AppUser user = _context.AppUsers.FirstOrDefault(user => user.Id == appUser.Id);
+            AppUser user = _context.AppUsers.SingleOrDefault(user => user.Login == appUser.Login);
+
+            //TODO 2.Check encrypted password
 
             if (user == null)
             {
@@ -51,6 +53,8 @@ namespace BlogSampleApi.Controllers
 
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
+
+        //TODO 1.Register with encrypted password
 
     }
 }
