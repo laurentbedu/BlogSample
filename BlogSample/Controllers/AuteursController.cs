@@ -1,5 +1,6 @@
 ﻿#nullable disable
 using BlogSampleApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogSampleApi.Controllers
@@ -13,6 +14,7 @@ namespace BlogSampleApi.Controllers
         }
 
         // GET: api/Auteurs
+        [Authorize]
         [HttpGet]
         public override async Task<ActionResult<IEnumerable<Auteur>>> GetAll()
         {
