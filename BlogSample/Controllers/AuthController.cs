@@ -1,9 +1,11 @@
 ﻿using BlogSampleApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace BlogSampleApi.Controllers
@@ -27,9 +29,24 @@ namespace BlogSampleApi.Controllers
         {
             AppUser user = _context.AppUsers.SingleOrDefault(user => user.Login == appUser.Login);
 
-            //TODO 2.Check encrypted password
-
             if (user == null)
+            {
+                return BadRequest("Invalid Credentials");
+            }
+
+            //TODO 2.Check encrypted password
+            string storedEncyptedPassword = user.Password.Split('$')[1];
+            string b64salt = user.Password.Split('$')[0];
+            byte[] salt = Convert.FromBase64String(b64salt);
+            string inputEncryptedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: appUser.Password,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8
+            ));
+
+            if (storedEncyptedPassword != inputEncryptedPassword)
             {
                 return BadRequest("Invalid Credentials");
             }
@@ -55,6 +72,37 @@ namespace BlogSampleApi.Controllers
         }
 
         //TODO 1.Register with encrypted password
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register(AppUser appUser)
+        {
+            AppUser user = _context.AppUsers.SingleOrDefault(user => user.Login == appUser.Login);
+
+            if (user != null)
+            {
+                return BadRequest("Login already used");
+            }
+
+            byte[] salt = new byte[256 / 8]; // Generate a 256-bit salt using a secure PRNG
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt);
+            }
+            string b64salt = Convert.ToBase64String(salt);
+            string encryptedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: appUser.Password,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8
+            ));
+
+            appUser.Password = b64salt + "$" + encryptedPassword;
+            _context.AppUsers.Add(appUser);
+            _context.SaveChanges();
+
+            return Ok(b64salt + "$" + encryptedPassword);
+        }
 
     }
 }
