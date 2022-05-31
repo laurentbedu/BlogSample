@@ -3,12 +3,7 @@
 @host = {{hostname}}:{{port}}/api
 @contentType = application/json
 
-#GET https://localhost:7157/api/Auteurs
-#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJu.eyJzdWIiOiJNeVN1YmplY3QiLCJqdGkiOiJjYTA2M2RmNC0zZDAyLTRhZmItYmM3My1mMGFiMWI0MzNlMzAiLCJpYXQiOiIwNy8wNC8yMDIyIDA5OjMyOjI0IiwiSWQiOiIxIiwiTG9naW4iOiJ1c2VyIiwiZXhwIjoxNjQ5MzI0NTQ0LCJpc3MiOiJNeUlzc3VlciIsImF1ZCI6Ik15QXVkaWVuY2UifQ.GqZjrEb8MgsDXbwTdhIq63NvbQD4GaVnrsTDD2b43W8
+GET https://localhost:7044/api/Auteurs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJNeVN1YmplY3QiLCJqdGkiOiI3ZmM4Y2RjYi0wMmIzLTQyOGEtOTZjNS1lYzE0ZDg0MjE1N2EiLCJpYXQiOiIxMS8wNC8yMDIyIDEzOjIzOjI0IiwiSWQiOiIzIiwiTG9naW4iOiJzdHJpbmciLCJleHAiOjE2NDk2ODM0NjQsImlzcyI6Ik15SXNzdWVyIiwiYXVkIjoiTXlBdWRpZW5jZSJ9.08yVfjSSarECkRdsKQBtsYGs8OABwF73fDIKhQ4Wzw4
 
 
-POST https://localhost:7157/api/AppUser
-{
-	"login":"test",
-	"password":"test"
-}

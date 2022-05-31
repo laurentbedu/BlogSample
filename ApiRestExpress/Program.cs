@@ -1,16 +1,66 @@
+using ApiRestExpress;
 using ApiRestExpress.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "JWT Authentication",
+        Description = "Enter JWT Bearer token **_only_**",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer", // must be lower case
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {securityScheme, new string[] { }}
+    });
+});
 
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddInstantAPIs();
 
+//builder.Services.AddAuthentication().AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
+//{
+//    o.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+//});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]))
+    };
+});
+
 var app = builder.Build();
+
+app.UseAuthentication();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -21,55 +71,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthenticationMiddleware();
 
 app.MapInstantAPIs<AppDbContext>();
 
-//List<Type> models = Assembly.GetExecutingAssembly().GetTypes()
-//              .Where(t => string.Equals(t.Namespace, "ApiRestExpress.Models", StringComparison.Ordinal) && t.BaseType.Name == "ModelBase")
-//              .ToList();
-
-
-
-//foreach (Type model in models)
-//{
-//    app.MapGet($"/api/{model.Name}", async (AppDbContext _context) =>
-//    {
-//        var results = _context
-//            .GetType().GetProperty(model.Name + "s")?.GetValue(_context);
-
-//        return results;
-//    });
-
-//    app.MapGet($"/api/{model.Name}/" + "{id:int}", async (AppDbContext _context, int id) =>
-//    {
-//        var results = _context
-//           .GetType().GetProperty(model.Name + "s")?.GetValue(_context);
-//        return ((List<dynamic>)results).FirstOrDefault(item => item.Id == id);
-//    });
-//}
-
-//var summaries = new[]
-//{
-//    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-//};
-
-//app.MapGet("/weatherforecast", () =>
-//{
-//    var forecast = Enumerable.Range(1, 5).Select(index =>
-//       new WeatherForecast
-//       (
-//           DateTime.Now.AddDays(index),
-//           Random.Shared.Next(-20, 55),
-//           summaries[Random.Shared.Next(summaries.Length)]
-//       ))
-//        .ToArray();
-//    return forecast;
-//})
-//.WithName("GetWeatherForecast");
+app.MapDefaultControllerRoute();
 
 app.Run();
-
-//internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-//{
-//    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-//}

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogSampleApi", "BlogSample\BlogSampleApi.csproj", "{C5B4E1FC-7B17-4081-9117-994A46949825}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogSampleApi", "BlogSample\BlogSampleApi.csproj", "{C5B4E1FC-7B17-4081-9117-994A46949825}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiRestExpress", "ApiRestExpress\ApiRestExpress.csproj", "{287DB8CC-A353-48B9-8388-0A48AEB28345}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C5B4E1FC-7B17-4081-9117-994A46949825}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5B4E1FC-7B17-4081-9117-994A46949825}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5B4E1FC-7B17-4081-9117-994A46949825}.Release|Any CPU.Build.0 = Release|Any CPU
+		{287DB8CC-A353-48B9-8388-0A48AEB28345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{287DB8CC-A353-48B9-8388-0A48AEB28345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{287DB8CC-A353-48B9-8388-0A48AEB28345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{287DB8CC-A353-48B9-8388-0A48AEB28345}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
